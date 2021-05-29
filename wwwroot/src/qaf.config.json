@@ -1,0 +1,40 @@
+﻿{
+    "TransactionTimeout": 60000,
+    "IsConfiguration": false,
+    "SolutionName": "Qrame Solution",
+    "ProgramName": "Qrame.Web.Browser",
+    "TextEditorExtension": "html|js|help|cs|sql",
+    "IsDebugMode": false,
+    "IsViewMappingModel": false,
+    "BaseDirectory": "/",
+    "SharedAssetUrl": "/views/shared/",
+    "ApiFindUrl": "http://127.0.0.1:10000/Find.svc/DoWork",
+    "DomainAPIServer": "http://127.0.0.1:10000",
+    "DomainServerType": "D",
+    "IntranetServerIP": "127.0.0.1",
+    "IntranetServerPort": "8080",
+    "Program": {
+        "ProgramVersion": "1.0.0",
+        "LanguageID": "KO",
+        "TerminalBranchCode": ""
+    },
+    "Transaction": {
+        "ProtocolVersion": "001",
+        "RunningEnvironment": "D",
+        "MachineName": "",
+        "SystemCode": "DTS",
+        "SystemInterfaceID": "",
+        "MachineTypeID": "WEB",
+        "DataEncryptionYN": "N"
+    },
+    "LoginUser": {
+        "UserID": "junchul",
+        "UserName": "조준철",
+        "UserClass": "0",
+        "DepartmentID": "dev",
+        "UserTypeID": [ "all" ],
+        "PersonalTel": "",
+        "BusinessTel": "",
+        "EMail": "junchul@qcn.co.kr"
+    }
+}
