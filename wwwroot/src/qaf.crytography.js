@@ -172,7 +172,7 @@
                 },
 
                 decompressFromUint8Array: function (compressed) {
-                    if (compressed === null || compressed === undefined) {
+                    if ($object.isNullOrUndefined(compressed) == true) {
                         return LZString.decompress(compressed);
                     } else {
                         var buf = new Array(compressed.length / 2);

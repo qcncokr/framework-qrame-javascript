@@ -116,7 +116,7 @@
             /// <returns type='Boolean' />
             var result = false;
             try {
-                if (val == null || val == '') {
+                if ($string.isNullOrEmpty(val) == true) {
                     result = true;
                 }
                 else if (typeof val == 'string') {
@@ -213,7 +213,7 @@
             /// <returns type='Object' />
             var result = null;
 
-            if (isNested == null || isNested == undefined) {
+            if ($object.isNullOrUndefined(isNested) == true) {
                 isNested = true;
             }
 

@@ -1,46 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\build\index.js" />
-    <None Include="wwwroot\build\index.min.js" />
-    <None Include="wwwroot\build\qaf.js" />
-    <None Include="wwwroot\build\qaf.min.js" />
-    <None Include="wwwroot\src\extends\qaf.webform.ajax.js" />
-    <None Include="wwwroot\src\extends\qaf.webform.data.js" />
-    <None Include="wwwroot\src\externel\emile.js" />
-    <None Include="wwwroot\src\externel\html5.js" />
-    <None Include="wwwroot\src\externel\JSLINQ.js" />
-    <None Include="wwwroot\src\externel\json2.js" />
-    <None Include="wwwroot\src\externel\papaparse.js" />
-    <None Include="wwwroot\src\externel\sizzle.js" />
-    <None Include="wwwroot\src\externel\XMLObjectifier.js" />
-    <None Include="wwwroot\src\lang\qaf.resource.en-US.js" />
-    <None Include="wwwroot\src\lang\qaf.resource.ja-JP.js" />
-    <None Include="wwwroot\src\lang\qaf.resource.ko-KR.js" />
-    <None Include="wwwroot\src\lang\qaf.resource.zh-CN.js" />
-    <None Include="wwwroot\src\qaf.browser.js" />
-    <None Include="wwwroot\src\qaf.channel.js" />
-    <None Include="wwwroot\src\qaf.core.js" />
-    <None Include="wwwroot\src\qaf.crytography.js" />
-    <None Include="wwwroot\src\qaf.dimension.js" />
-    <None Include="wwwroot\src\qaf.exception.js" />
-    <None Include="wwwroot\src\qaf.exports.js" />
-    <None Include="wwwroot\src\qaf.extension.js" />
-    <None Include="wwwroot\src\qaf.keyboard.js" />
-    <None Include="wwwroot\src\qaf.library.js" />
-    <None Include="wwwroot\src\qaf.manipulation.js" />
-    <None Include="wwwroot\src\qaf.reflection.js" />
-    <None Include="wwwroot\src\qaf.request.js" />
-    <None Include="wwwroot\src\qaf.resource.js" />
-    <None Include="wwwroot\src\qaf.stringbuilder.js" />
-    <None Include="wwwroot\src\qaf.system.js" />
-    <None Include="wwwroot\src\qaf.templete.js" />
-    <None Include="wwwroot\src\qaf.vaildation.js" />
-    <None Include="wwwroot\src\qaf.webform.js" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <None Include="wwwroot\**" />
+        <None Update="wwwroot\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

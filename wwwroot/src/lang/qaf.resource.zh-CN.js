@@ -45,7 +45,7 @@
     $res.add('create', '输入');
     $res.add('read', '查询');
     $res.add('find', '检索');
-    $res.add('update', '修正');
+    $res.add('edit', '修正');
     $res.add('delele', '删除');
     $res.add('removeStatusNo', '不是删除可以的状态。 必须询问数据之后删除。');
     $res.add('removeConfirm', '真的是不是删除？');

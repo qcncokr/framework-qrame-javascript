@@ -810,7 +810,7 @@
             var result = [];
 
             if (data) {
-                if (childrenID == null || childrenID == undefined) {
+                if ($object.isNullOrUndefined(childrenID) == true) {
                     childrenID = 'items';
                 }
 
@@ -831,12 +831,12 @@
         parseNested2Flat: function (data, newData, itemID, parentItemID, childrenID) {
             var result = null;
 
+            if ($object.isNullOrUndefined(childrenID) == true) {
+                childrenID = 'items';
+            }
+
             var items = data[childrenID];
             if (data && items) {
-                if (childrenID == null || childrenID == undefined) {
-                    childrenID = 'items';
-                }
-
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i];
 
@@ -859,7 +859,7 @@
             var result = null;
 
             if (data && itemID && parentItemID) {
-                if (childrenID == null || childrenID == undefined) {
+                if ($object.isNullOrUndefined(childrenID) == true) {
                     childrenID = 'items';
                 }
 
@@ -876,7 +876,7 @@
         },
 
         parseFlat2Nested: function (data, root, newData, itemID, parentItemID, childrenID) {
-            if (childrenID == null || childrenID == undefined) {
+            if ($object.isNullOrUndefined(childrenID) == true) {
                 childrenID = 'items';
             }
 
@@ -896,12 +896,12 @@
         findNestedByID: function (data, findID, itemID, childrenID) {
             var result = null;
 
+            if ($object.isNullOrUndefined(childrenID) == true) {
+                childrenID = 'items';
+            }
+
             var items = data[childrenID];
             if (data && items) {
-                if (childrenID == null || childrenID == undefined) {
-                    childrenID = 'items';
-                }
-
                 if (data[itemID] == findID) {
                     result = data;
 

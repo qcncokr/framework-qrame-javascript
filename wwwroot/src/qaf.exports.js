@@ -29,7 +29,7 @@ if (isNodejs == true) {
     globalThis.$logger = logger;
 
     if (qaf && !qaf.initializeModuleScript) {
-        qaf.initializeModuleScript = function (moduleFileName) {
+        qaf.initializeModuleScript = function (moduleFileName, dataSourceMap) {
             var result = null;
             if (moduleFileName) {
                 try {
@@ -42,10 +42,16 @@ if (isNodejs == true) {
 
                     var functionModule = qaf.functionModules[moduleID];
                     if (functionModule == undefined) {
+                        var dataSource = null;
+                        if (dataSourceMap) {
+                            var dataSource = JSON.parse(dataSourceMap);
+                        }
+
                         functionModule = {
                             path: fileDirectory,
                             config: eval('(' + fs.readFileSync(moduleFileName.replace('featureMain.js', 'featureMeta.json'), 'utf8') + ')').Header,
                             featureSQLPath: null,
+                            dataSource: dataSource,
                             logger: null,
                         };
 

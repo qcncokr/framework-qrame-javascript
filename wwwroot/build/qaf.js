@@ -1557,7 +1557,7 @@ function purge(d) {
         },
 
         measureSize: function (text, fontSize) {
-            if (text == null || text == undefined) {
+            if ($object.isNullOrUndefined(text) == true) {
                 return null;
             }
 
@@ -1688,7 +1688,7 @@ function purge(d) {
             /// <returns type='Boolean' />
             var result = false;
             try {
-                if (val == null || val == '') {
+                if ($string.isNullOrEmpty(val) == true) {
                     result = true;
                 }
                 else if (typeof val == 'string') {
@@ -1785,7 +1785,7 @@ function purge(d) {
             /// <returns type='Object' />
             var result = null;
 
-            if (isNested == null || isNested == undefined) {
+            if ($object.isNullOrUndefined(isNested) == true) {
                 isNested = true;
             }
 
@@ -2082,7 +2082,7 @@ function purge(d) {
                 },
 
                 decompressFromUint8Array: function (compressed) {
-                    if (compressed === null || compressed === undefined) {
+                    if ($object.isNullOrUndefined(compressed) == true) {
                         return LZString.decompress(compressed);
                     } else {
                         var buf = new Array(compressed.length / 2);
@@ -4027,7 +4027,7 @@ function purge(d) {
 
         substring: function (val, len) {
             var currentLength = 0;
-            if (len == null || len == undefined) {
+            if ($object.isNullOrUndefined(len) == true) {
                 len = val.length;
             }
 
@@ -4159,7 +4159,7 @@ function purge(d) {
             /// <returns type='Number' />
             var result = 0;
             try {
-                result = parseFloat((val == null || val == undefined ? 0 : val) === 0 || val === '' ? '0' : val.toString().replace(/,/g, ''));
+                result = parseFloat(($object.isNullOrUndefined(val) == true ? 0 : val) === 0 || val === '' ? '0' : val.toString().replace(/,/g, ''));
             } catch (error) {
                 console.log(error);
             }
@@ -4238,7 +4238,7 @@ function purge(d) {
                         break;
                     case 'number':
                     case 'int':
-                        result = val == null || val == undefined ? null : $string.isNumber(val) == true ? $string.toNumber(val) : null;
+                        result = $object.isNullOrUndefined(val) == true ? null : $string.isNumber(val) == true ? $string.toNumber(val) : null;
                         break;
                     case 'date':
                         if ($validation.regexs.isoDate.test(val)) {
@@ -4274,7 +4274,7 @@ function purge(d) {
                 return result;
             }
 
-            if (localeID == null || localeID == undefined) {
+            if ($object.isNullOrUndefined(localeID) == true) {
                 var x = val.toString().split('.');
                 var x1 = x[0];
 
@@ -4413,7 +4413,7 @@ function purge(d) {
             /// <param name='arr' type='Array'>객체 Array Object 입니다.</param>
             /// <param name='prop' type='String'>정렬 기준으로 사용 하려고 하는 속성명입니다.</param>
             /// <param name='order' type='Boolean'>true이면 정순으로, false면 역순으로 정렬합니다. 기본값은 true입니다.</param>
-            if (order == null || order == undefined) {
+            if ($object.isNullOrUndefined(order) == true) {
                 order = true;
             }
 
@@ -4774,12 +4774,43 @@ function purge(d) {
             var result = Math.pow(10, precision);
 
             return Math.round((num * 100 / val) * result) / result;
+        },
+
+        random: function (start, end) {
+            /// <summary>
+            /// 지정한 범위내 랜덤 숫자를 생성합니다. 기본 10자리입니다.
+            /// </summary>
+            /// <param name='len' type='Number'></param>
+            /// <returns type='String' />
+            if ($string.isNullOrEmpty(start) == true) {
+                start = 0;
+            }
+
+            if ($string.isNullOrEmpty(end) == true) {
+                end = 10;
+            }
+
+            return Math.floor((Math.random() * (end - start + 1)) + start);
         }
     });
     context.$number = qaf.lib.$number = $number;
 
     $object.extend({
         version: '1.0',
+
+        isNullOrUndefined: function (val) {
+            /// <summary>
+            /// 값에서 지정된 값이 비어 있는지 검증합니다.
+            /// </summary>
+            /// <param name='val' type='String'>비어있는지 검증하기 위한 값입니다.</param>
+            /// <returns type='Boolean' />
+            if (val === undefined || val === null) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },
 
         toCSV: function (obj, opt) {
             /// <summary>
@@ -5659,7 +5690,7 @@ function purge(d) {
             var result = [];
 
             if (data) {
-                if (childrenID == null || childrenID == undefined) {
+                if ($object.isNullOrUndefined(childrenID) == true) {
                     childrenID = 'items';
                 }
 
@@ -5680,12 +5711,12 @@ function purge(d) {
         parseNested2Flat: function (data, newData, itemID, parentItemID, childrenID) {
             var result = null;
 
+            if ($object.isNullOrUndefined(childrenID) == true) {
+                childrenID = 'items';
+            }
+
             var items = data[childrenID];
             if (data && items) {
-                if (childrenID == null || childrenID == undefined) {
-                    childrenID = 'items';
-                }
-
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i];
 
@@ -5708,7 +5739,7 @@ function purge(d) {
             var result = null;
 
             if (data && itemID && parentItemID) {
-                if (childrenID == null || childrenID == undefined) {
+                if ($object.isNullOrUndefined(childrenID) == true) {
                     childrenID = 'items';
                 }
 
@@ -5725,7 +5756,7 @@ function purge(d) {
         },
 
         parseFlat2Nested: function (data, root, newData, itemID, parentItemID, childrenID) {
-            if (childrenID == null || childrenID == undefined) {
+            if ($object.isNullOrUndefined(childrenID) == true) {
                 childrenID = 'items';
             }
 
@@ -5745,12 +5776,12 @@ function purge(d) {
         findNestedByID: function (data, findID, itemID, childrenID) {
             var result = null;
 
+            if ($object.isNullOrUndefined(childrenID) == true) {
+                childrenID = 'items';
+            }
+
             var items = data[childrenID];
             if (data && items) {
-                if (childrenID == null || childrenID == undefined) {
-                    childrenID = 'items';
-                }
-
                 if (data[itemID] == findID) {
                     result = data;
 
@@ -6159,7 +6190,7 @@ function purge(d) {
             /// <summary>
             /// blob 정보에서 datauri를 반환합니다
             /// </summary>
-            if (callback == null || callback == undefined) {
+            if ($object.isNullOrUndefined(callback) == true) {
                 $l.eventLog('$r.blobToDataUri', 'blob 결과 callback 확인 필요', 'Warning');
                 return;
             }
@@ -6203,7 +6234,7 @@ function purge(d) {
             /// <summary>
             /// blob url 정보에서 datauri를 반환합니다
             /// </summary>
-            if (callback == null || callback == undefined) {
+            if ($object.isNullOrUndefined(callback) == true) {
                 $l.eventLog('$r.blobUrlToData', 'blob 결과 callback 확인 필요', 'Warning');
                 return;
             }
@@ -6224,7 +6255,7 @@ function purge(d) {
             /// <summary>
             /// blob url 정보에서 datauri를 반환합니다
             /// </summary>
-            if (callback == null || callback == undefined) {
+            if ($object.isNullOrUndefined(callback) == true) {
                 $l.eventLog('$r.blobUrlToDataUri', 'blob 결과 callback 확인 필요', 'Warning');
                 return;
             }
@@ -6273,7 +6304,7 @@ function purge(d) {
 
             for (var key in this.params) {
                 if (typeof ($r.params[key]) == 'string') {
-                    param += escape(key) + '=' + escape($r.params[key]) + '&';
+                    param += key + '=' + $r.params[key] + '&';
                 }
             }
 
@@ -6289,7 +6320,7 @@ function purge(d) {
             }
 
             this.params = [];
-            return param.substring(0, param.length - 1);
+            return encodeURI(param.substring(0, param.length - 1));
         },
 
         getCookie: function (id) {
@@ -6318,15 +6349,15 @@ function purge(d) {
             /// <param name='path' type='String' optional='true'>쿠키의 적용 경로입니다.</param>
             /// <param name='domain' type='String' optional='true'>쿠키의 적용 도메인입니다.</param>
             /// <param name='secure' type='String' optional='true'>쿠키의 보안키입니다.</param>
-            if (expires == null || expires == undefined) {
+            if ($object.isNullOrUndefined(expires) == true) {
                 expires = new Date((new Date()).getTime() + (1000 * 60 * 60 * 24));
             }
 
-            if (path == null || path == undefined) {
+            if ($object.isNullOrUndefined(path) == true) {
                 path = '/';
             }
 
-            document.cookie = id + '=' + escape(val) + ((expires) ? ';expires=' + expires.toGMTString() : '') + ((path) ? ';path=' + path : '') + ((domain) ? ';domain=' + domain : '') + ((secure) ? ';secure' : '');
+            document.cookie = id + '=' + encodeURI(val) + ((expires) ? ';expires=' + expires.toGMTString() : '') + ((path) ? ';path=' + path : '') + ((domain) ? ';domain=' + domain : '') + ((secure) ? ';secure' : '');
             return this;
         },
 
@@ -6439,7 +6470,7 @@ function purge(d) {
 
             var onPostMessage = function (evt) {
                 try {
-                    if (evt.data == null || evt.data == undefined || evt.data == '') {
+                    if ($string.isNullOrEmpty(evt.data) == true) {
                         return;
                     }
 
@@ -7295,7 +7326,7 @@ function purge(d) {
             /// <returns type='Type'></returns>
             var result = null;
             var evt = event || context.event;
-            if ($this) {
+            if (globalThis.$this) {
                 if (evt) {
                     result = (evt && evt.target || evt.srcElement) || $this.focusControl || document.activeElement;
                 }
@@ -7399,7 +7430,7 @@ function purge(d) {
                                     evt: e
                                 });
 
-                                if (result == null || result == undefined || $string.toBoolean(result) == false) {
+                                if ($object.isNullOrUndefined(result) == true || $string.toBoolean(result) == false) {
                                     result = false;
                                 }
                             }
@@ -7432,7 +7463,7 @@ function purge(d) {
                 }
 
                 setTimeout(function () {
-                    if (mod && mod.qafControls && (mod.tabOrderControls == null || mod.tabOrderControls == undefined || mod.tabOrderControls.length == 0)) {
+                    if (mod && mod.qafControls && ($object.isNullOrUndefined(mod.tabOrderControls) == true || mod.tabOrderControls.length == 0)) {
                         var qafTagNames = [];
                         var qaf_tags = document.body.outerHTML.match(/<(qaf_).+?>/gi);
                         if (qaf_tags) {
@@ -7628,6 +7659,11 @@ function purge(d) {
             }
 
             var pageFormInit = function () {
+                var mod = context[$w.pageScript];
+                if (mod && mod['pageFormInit']) {
+                    mod['pageFormInit']();
+                }
+
                 var qafControlList = [];
                 var qafControls = document.querySelectorAll('[qaf-datafield],[qaf-options],[qaf-events]');
                 for (var i = 0; i < qafControls.length; i++) {
@@ -7786,7 +7822,7 @@ function purge(d) {
                         if (qaf.$reflection.isString(options.transactConfig.triggerEvent) == true) {
                             $l.addEvent(elID, options.transactConfig.triggerEvent, function (transactConfig) {
                                 var el = this;
-                                if (transactConfig && (transactConfig.triggerEvent == null || transactConfig.triggerEvent == undefined)) {
+                                if (transactConfig && $object.isNullOrUndefined(transactConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     transactConfig = options.transactConfig;
                                 }
@@ -7805,7 +7841,7 @@ function purge(d) {
                         else if (qaf.$reflection.isArray(options.transactConfig.triggerEvent) == true) {
                             var triggerFunction = function (transactConfig) {
                                 var el = this;
-                                if (transactConfig && (transactConfig.triggerEvent == null || transactConfig.triggerEvent == undefined)) {
+                                if (transactConfig && $object.isNullOrUndefined(transactConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     transactConfig = options.transactConfig;
                                 }
@@ -7832,7 +7868,7 @@ function purge(d) {
                         if (qaf.$reflection.isString(options.triggerConfig.triggerEvent) == true) {
                             $l.addEvent(elID, options.triggerConfig.triggerEvent, function (triggerConfig) {
                                 var el = this;
-                                if (triggerConfig && (triggerConfig.triggerEvent == null || triggerConfig.triggerEvent == undefined)) {
+                                if (triggerConfig && $object.isNullOrUndefined(triggerConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     triggerConfig = options.triggerConfig;
                                 }
@@ -7851,7 +7887,7 @@ function purge(d) {
                         else if (qaf.$reflection.isArray(options.triggerConfig.triggerEvent) == true) {
                             var triggerFunction = function (triggerConfig) {
                                 var el = this;
-                                if (triggerConfig && (triggerConfig.triggerEvent == null || triggerConfig.triggerEvent == undefined)) {
+                                if (triggerConfig && $object.isNullOrUndefined(triggerConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     triggerConfig = options.triggerConfig;
                                 }
@@ -7885,7 +7921,6 @@ function purge(d) {
                     document.body.style.display = 'block';
                 }
 
-                var mod = context[$w.pageScript];
                 if (mod) {
                     mod.qafControls = qafControlList;
                 }
@@ -7912,7 +7947,7 @@ function purge(d) {
             if ($w.mappingModule == true) {
                 $w.moduleReadyIntervalID = setInterval(function () {
                     var mod = context[$w.pageScript];
-                    if (mod) {
+                    if (mod && mod._pageInit == undefined) {
                         clearInterval($w.moduleReadyIntervalID);
                         $w.moduleReadyIntervalID = null;
 
@@ -7920,6 +7955,7 @@ function purge(d) {
                             domainLibraryLoad();
                         }
 
+                        mod._pageInit = true;
                         if ($w.appInfo && $w.appInfo.mappingModel) {
                             var argArgs = $r.getCookie('qaf.iscache') == 'true' ? '' : '?bust=' + new Date().getTime();
                             var moduleJsonFile = $w.pageScript.replace('$', '') + '.json';
@@ -8080,7 +8116,7 @@ function purge(d) {
                     isContinue = $this.beforeTrigger(triggerConfig.triggerID, triggerConfig.action, triggerConfig.params);
                 }
 
-                if (isContinue == null || isContinue == undefined || isContinue == true) {
+                if ($object.isNullOrUndefined(isContinue) == true || isContinue == true) {
                     var el = $l.get(triggerConfig.triggerID);
                     var triggerResult = null;
                     var trigger = null;
@@ -8138,13 +8174,17 @@ function purge(d) {
         },
 
         transactionAction: function (transactConfig) {
-            if ($this && $this.mappingModel) {
-                if ($w.progressMessage) {
+            if (transactConfig && $this && $this.mappingModel) {
+                if ($object.isNullOrUndefined(transactConfig.noProgress) == true) {
+                    transactConfig.noProgress = false;
+                }
+
+                if ($w.progressMessage && transactConfig.noProgress == false) {
                     $w.progressMessage($res.progress);
                 }
 
                 try {
-                    if ($this.mappingModel.Transactions == null || $this.mappingModel.Transactions == undefined) {
+                    if ($object.isNullOrUndefined($this.mappingModel.Transactions) == true) {
                         $this.mappingModel.Transactions = [];
                     }
 
@@ -8154,7 +8194,7 @@ function purge(d) {
                         isContinue = $this.beforeTransaction(transactConfig);
                     }
 
-                    if (isContinue == null || isContinue == undefined || isContinue == true) {
+                    if ($object.isNullOrUndefined(isContinue) == true || isContinue == true) {
                         var transactions = $this.mappingModel.Transactions;
                         for (var i = 0; i < transactions.length; i++) {
                             if (transactConfig.functionID == transactions[i].FunctionID) {
@@ -8166,6 +8206,7 @@ function purge(d) {
                         var qafControlList = $this.qafControls;
                         var transactionObject = {};
                         transactionObject.FunctionID = transactConfig.functionID;
+                        transactionObject.TransactionResult = $object.isNullOrUndefined(transactConfig.transactionResult) == true ? true : transactConfig.transactionResult === true;
                         transactionObject.Inputs = [];
                         transactionObject.Outputs = [];
 
@@ -8743,7 +8784,7 @@ function purge(d) {
                 debugger;
             });
             */
-            directObject.TransactionResult = (directObject.TransactionResult == null || directObject.TransactionResult == undefined) ? true : directObject.TransactionResult === true;
+            directObject.TransactionResult = $object.isNullOrUndefined(directObject.TransactionResult) == true ? true : directObject.TransactionResult === true;
             var transactionObject = $w.transactionObject(directObject.FunctionID, 'Json');
 
             transactionObject.ProgramID = directObject.ProgramID;
@@ -8751,7 +8792,7 @@ function purge(d) {
             transactionObject.SystemID = directObject.SystemID;
             transactionObject.TransactionID = directObject.TransactionID;
             transactionObject.DataTransactionInterface = directObject.DataTransactionInterface || 'Row|Form';
-            transactionObject.TransactionResult = (directObject.TransactionResult == null || directObject.TransactionResult == undefined) ? true : directObject.TransactionResult === true;
+            transactionObject.TransactionResult = $object.isNullOrUndefined(directObject.TransactionResult) == true ? true : directObject.TransactionResult === true;
 
             if (isNodejs == true) {
                 transactionObject.ScreenID = directObject.ScreenID || directObject.TransactionID;
@@ -8972,7 +9013,7 @@ function purge(d) {
                                                             controlValue = 0;
                                                         }
 
-                                                        if (controlValue == null || controlValue == undefined) {
+                                                        if ($object.isNullOrUndefined(controlValue) == true) {
                                                             controlValue = '';
                                                         }
                                                     }
@@ -9132,86 +9173,74 @@ function purge(d) {
                                         var outputData = RES_OUTPUT['RES_DAT'];
 
                                         if (outputMapping.ResponseType == 'Form') {
-                                            if (outputData.length) {
+                                            if ($object.isNullOrUndefined(outputData) == true || outputData.length) {
                                                 responseObject.OutputStat.push({
                                                     FieldID: responseFieldID,
                                                     Count: 0
                                                 });
-
-                                                errorText = '"{0}" Form Output Mapping 확인 필요'.format(responseFieldID);
-                                                responseObject.ErrorText.push(errorText);
-                                                $l.eventLog('$w.transaction', errorText, 'Error');
                                             }
                                             else {
-                                                if ($reflection.isObjectEmpty(outputData) == true) {
-                                                    responseObject.OutputStat.push({
-                                                        FieldID: responseFieldID,
-                                                        Count: 0
-                                                    });
-                                                }
-                                                else {
-                                                    responseObject.OutputStat.push({
-                                                        FieldID: responseFieldID,
-                                                        Count: 1
-                                                    });
+                                                responseObject.OutputStat.push({
+                                                    FieldID: responseFieldID,
+                                                    Count: 1
+                                                });
 
-                                                    for (var key in outputMapping.Items) {
-                                                        var meta = outputMapping.Items[key];
-                                                        var dataFieldID = key; // qaf-datafield
-                                                        var fieldID = meta.FieldID; // DbColumnID
+                                                for (var key in outputMapping.Items) {
+                                                    var meta = outputMapping.Items[key];
+                                                    var dataFieldID = key; // qaf-datafield
+                                                    var fieldID = meta.FieldID; // DbColumnID
 
-                                                        var controlValue = outputData[fieldID];
-                                                        if (controlValue != undefined && qafControls && qafControls.length > 0) {
-                                                            var bindingControlInfos = qafControls.filter(function (item) {
-                                                                return item.field == dataFieldID && item.formDataFieldID == outputMapping.DataFieldID;
-                                                            });
+                                                    var controlValue = outputData[fieldID];
+                                                    if (controlValue != undefined && qafControls && qafControls.length > 0) {
+                                                        var bindingControlInfos = qafControls.filter(function (item) {
+                                                            return item.field == dataFieldID && item.formDataFieldID == outputMapping.DataFieldID;
+                                                        });
 
-                                                            if (bindingControlInfos.length == 1) {
-                                                                var controlInfo = bindingControlInfos[0];
-                                                                var controlModule = null;
-                                                                var currings = controlInfo.module.split('.');
-                                                                if (currings.length > 0) {
-                                                                    for (var i = 0; i < currings.length; i++) {
-                                                                        var curring = currings[i];
-                                                                        if (controlModule) {
-                                                                            controlModule = controlModule[curring];
-                                                                        }
-                                                                        else {
-                                                                            controlModule = context[curring];
-                                                                        }
+                                                        if (bindingControlInfos.length == 1) {
+                                                            var controlInfo = bindingControlInfos[0];
+                                                            var controlModule = null;
+                                                            var currings = controlInfo.module.split('.');
+                                                            if (currings.length > 0) {
+                                                                for (var i = 0; i < currings.length; i++) {
+                                                                    var curring = currings[i];
+                                                                    if (controlModule) {
+                                                                        controlModule = controlModule[curring];
+                                                                    }
+                                                                    else {
+                                                                        controlModule = context[curring];
                                                                     }
                                                                 }
-                                                                else {
-                                                                    controlModule = context[controlInfo.module];
-                                                                }
-
-                                                                controlModule.setValue(controlInfo.id, controlValue, meta);
                                                             }
                                                             else {
-                                                                var isMapping = false;
-                                                                if ($this.$data && $this.$data.storeList.length > 0) {
-                                                                    for (var k = 0; k < $this.$data.storeList.length; k++) {
-                                                                        var store = $this.$data.storeList[k];
-                                                                        if (store.storeType == 'Form' && store.dataSourceID == outputMapping.DataFieldID) {
-                                                                            isMapping = true;
-                                                                            bindingControlInfos = store.columns.filter(function (item) {
-                                                                                return item.data == dataFieldID;
-                                                                            });
+                                                                controlModule = context[controlInfo.module];
+                                                            }
 
-                                                                            if (bindingControlInfos.length == 1) {
-                                                                                $this.store[store.dataSourceID][dataFieldID] = controlValue;
-                                                                            }
+                                                            controlModule.setValue(controlInfo.id, controlValue, meta);
+                                                        }
+                                                        else {
+                                                            var isMapping = false;
+                                                            if ($this.$data && $this.$data.storeList.length > 0) {
+                                                                for (var k = 0; k < $this.$data.storeList.length; k++) {
+                                                                    var store = $this.$data.storeList[k];
+                                                                    if (store.storeType == 'Form' && store.dataSourceID == outputMapping.DataFieldID) {
+                                                                        isMapping = true;
+                                                                        bindingControlInfos = store.columns.filter(function (item) {
+                                                                            return item.data == dataFieldID;
+                                                                        });
 
-                                                                            break;
+                                                                        if (bindingControlInfos.length == 1) {
+                                                                            $this.store[store.dataSourceID][dataFieldID] = controlValue;
                                                                         }
+
+                                                                        break;
                                                                     }
                                                                 }
+                                                            }
 
-                                                                if (isMapping == false) {
-                                                                    errorText = '"{0}" Form Output Mapping 확인 필요'.format(dataFieldID);
-                                                                    responseObject.ErrorText.push(errorText);
-                                                                    $l.eventLog('$w.transaction', errorText, 'Error');
-                                                                }
+                                                            if (isMapping == false) {
+                                                                errorText = '"{0}" Form Output Mapping 확인 필요'.format(dataFieldID);
+                                                                responseObject.ErrorText.push(errorText);
+                                                                $l.eventLog('$w.transaction', errorText, 'Error');
                                                             }
                                                         }
                                                     }
@@ -9685,7 +9714,7 @@ function purge(d) {
             var el = document.createElement('script');
 
             el.setAttribute('type', 'text/javascript');
-            el.setAttribute('src', url + '&noCache=' + (new Date()).getTime());
+            el.setAttribute('src', url + (url.indexOf('?') > -1 ? '&' : '?') + 'noCache=' + (new Date()).getTime());
             el.setAttribute('id', resourceID);
 
             head.insertBefore(el, head.firstChild);
@@ -9716,7 +9745,7 @@ function purge(d) {
 
             el.setAttribute('rel', 'stylesheet');
             el.setAttribute('type', 'text/css');
-            el.setAttribute('href', url + '&noCache=' + (new Date()).getTime());
+            el.setAttribute('href', url + (url.indexOf('?') > -1 ? '&' : '?') + 'noCache=' + (new Date()).getTime());
             el.setAttribute('id', resourceID);
 
             head.appendChild(el);
@@ -9731,10 +9760,8 @@ function purge(d) {
             /// </summary>
             /// <param name='url' type='String'>Html, Json등 URL</param>
             /// <returns type='Object' />
-            url = url;
-
             var xhr = $w.xmlHttp();
-            xhr.open('get', url + '&noCache=' + (new Date()).getTime(), true);
+            xhr.open('get', url + (url.indexOf('?') > -1 ? '&' : '?') + 'noCache=' + (new Date()).getTime(), true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status !== 200) {
@@ -9748,7 +9775,7 @@ function purge(d) {
                     }
 
                     if (callback) {
-                        callback(xhr.responseText)
+                        callback(xhr.responseText);
                     }
                 }
             }
@@ -10105,6 +10132,18 @@ function purge(d) {
             return result;
         },
 
+        executeDynamicTypeObject: new function () {
+            this.DataSet = '0';
+            this.Json = '1';
+            this.Scalar = '2';
+            this.NonQuery = '3';
+            this.SQLText = '4';
+            this.SchemeOnly = '5';
+            this.CodeHelp = '6';
+            this.Xml = '7';
+            this.DynamicJson = '8';
+        },
+
         executeTransaction: function (mappingModel, transactionObject, callback, async, token) {
             /// <summary>
             /// 비즈니스 로직이 포함되어 있는 WCF 요청을 수행합니다.
@@ -10129,7 +10168,7 @@ function purge(d) {
                 var apiServices = $w.getStorage('apiServices', false);
                 if (apiServices) {
                     apiService = apiServices[qaf.Config.Transaction.SystemID + qaf.Config.DomainServerType];
-                    if ((apiServices.BearerToken == null || apiServices.BearerToken == undefined) && globalThis.bearerToken) {
+                    if ($object.isNullOrUndefined(apiServices.BearerToken) == true && globalThis.bearerToken) {
                         apiServices.BearerToken = globalThis.bearerToken;
                         $w.setStorage('apiServices', apiServices, false);
                     }
@@ -10450,6 +10489,14 @@ function purge(d) {
                                         for (var i = 0; i < length; i++) {
                                             var item = RES_OUTPUT[i];
 
+                                            if (transactionResponse.TH.SMLT_TRN_DSCD == $w.executeDynamicTypeObject.CodeHelp) {
+                                                jsonObject.push({
+                                                    RES_FIELD_ID: item.RES_FIELD_ID,
+                                                    RES_DAT: item.RES_DAT
+                                                });
+                                                continue;
+                                            }
+
                                             if (transactionResponse.TH.DAT_FMT == 'J') {
                                                 if (transactionResponse.TH.CRYPTO_DSCD == 'C') {
                                                     jsonObject.push({
@@ -10562,7 +10609,7 @@ function purge(d) {
                             }
                             else {
                                 if (callback) {
-                                    if (transactionResponse.Acknowledge == 1) {
+                                    if (transactionResponse && transactionResponse.Acknowledge && transactionResponse.Acknowledge == 1) {
                                         try {
                                             var mdo = transactionResponse.MDO;
                                             if (transactionResponse.DAT.RES_OUTPUT != null && transactionResponse.DAT.RES_OUTPUT.length > 0) {
@@ -10910,7 +10957,7 @@ function purge(d) {
     $res.add('create', '입력');
     $res.add('read', '조회');
     $res.add('find', '검색');
-    $res.add('update', '수정');
+    $res.add('edit', '수정');
     $res.add('delele', '삭제');
     $res.add('removeStatusNo', '삭제 가능한 상태가 아닙니다. 데이터를 조회한 후 삭제 해야 합니다.');
     $res.add('removeConfirm', '정말로 삭제 하시겠습니까?');

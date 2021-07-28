@@ -92,7 +92,7 @@
 
             var onPostMessage = function (evt) {
                 try {
-                    if (evt.data == null || evt.data == undefined || evt.data == '') {
+                    if ($string.isNullOrEmpty(evt.data) == true) {
                         return;
                     }
 

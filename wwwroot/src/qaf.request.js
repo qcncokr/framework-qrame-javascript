@@ -108,7 +108,7 @@
             /// <summary>
             /// blob 정보에서 datauri를 반환합니다
             /// </summary>
-            if (callback == null || callback == undefined) {
+            if ($object.isNullOrUndefined(callback) == true) {
                 $l.eventLog('$r.blobToDataUri', 'blob 결과 callback 확인 필요', 'Warning');
                 return;
             }
@@ -152,7 +152,7 @@
             /// <summary>
             /// blob url 정보에서 datauri를 반환합니다
             /// </summary>
-            if (callback == null || callback == undefined) {
+            if ($object.isNullOrUndefined(callback) == true) {
                 $l.eventLog('$r.blobUrlToData', 'blob 결과 callback 확인 필요', 'Warning');
                 return;
             }
@@ -173,7 +173,7 @@
             /// <summary>
             /// blob url 정보에서 datauri를 반환합니다
             /// </summary>
-            if (callback == null || callback == undefined) {
+            if ($object.isNullOrUndefined(callback) == true) {
                 $l.eventLog('$r.blobUrlToDataUri', 'blob 결과 callback 확인 필요', 'Warning');
                 return;
             }
@@ -222,7 +222,7 @@
 
             for (var key in this.params) {
                 if (typeof ($r.params[key]) == 'string') {
-                    param += escape(key) + '=' + escape($r.params[key]) + '&';
+                    param += key + '=' + $r.params[key] + '&';
                 }
             }
 
@@ -238,7 +238,7 @@
             }
 
             this.params = [];
-            return param.substring(0, param.length - 1);
+            return encodeURI(param.substring(0, param.length - 1));
         },
 
         getCookie: function (id) {
@@ -267,15 +267,15 @@
             /// <param name='path' type='String' optional='true'>쿠키의 적용 경로입니다.</param>
             /// <param name='domain' type='String' optional='true'>쿠키의 적용 도메인입니다.</param>
             /// <param name='secure' type='String' optional='true'>쿠키의 보안키입니다.</param>
-            if (expires == null || expires == undefined) {
+            if ($object.isNullOrUndefined(expires) == true) {
                 expires = new Date((new Date()).getTime() + (1000 * 60 * 60 * 24));
             }
 
-            if (path == null || path == undefined) {
+            if ($object.isNullOrUndefined(path) == true) {
                 path = '/';
             }
 
-            document.cookie = id + '=' + escape(val) + ((expires) ? ';expires=' + expires.toGMTString() : '') + ((path) ? ';path=' + path : '') + ((domain) ? ';domain=' + domain : '') + ((secure) ? ';secure' : '');
+            document.cookie = id + '=' + encodeURI(val) + ((expires) ? ';expires=' + expires.toGMTString() : '') + ((path) ? ';path=' + path : '') + ((domain) ? ';domain=' + domain : '') + ((secure) ? ';secure' : '');
             return this;
         },
 

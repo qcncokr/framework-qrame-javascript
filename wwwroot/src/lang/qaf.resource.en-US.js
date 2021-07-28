@@ -45,7 +45,7 @@
     $res.add('create', 'input');
     $res.add('read', 'inquiry');
     $res.add('find', 'search');
-    $res.add('update', 'correction');
+    $res.add('edit', 'correction');
     $res.add('delele', 'elimination');
     $res.add('removeStatusNo', 'elimination isn\'t in the possible state. After inquiring data, I have to eliminate. ');
     $res.add('removeConfirm', 'Is it eliminated in truth?');

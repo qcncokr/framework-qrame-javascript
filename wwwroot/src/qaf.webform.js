@@ -329,7 +329,7 @@
             /// <returns type='Type'></returns>
             var result = null;
             var evt = event || context.event;
-            if ($this) {
+            if (globalThis.$this) {
                 if (evt) {
                     result = (evt && evt.target || evt.srcElement) || $this.focusControl || document.activeElement;
                 }
@@ -433,7 +433,7 @@
                                     evt: e
                                 });
 
-                                if (result == null || result == undefined || $string.toBoolean(result) == false) {
+                                if ($object.isNullOrUndefined(result) == true || $string.toBoolean(result) == false) {
                                     result = false;
                                 }
                             }
@@ -466,7 +466,7 @@
                 }
 
                 setTimeout(function () {
-                    if (mod && mod.qafControls && (mod.tabOrderControls == null || mod.tabOrderControls == undefined || mod.tabOrderControls.length == 0)) {
+                    if (mod && mod.qafControls && ($object.isNullOrUndefined(mod.tabOrderControls) == true || mod.tabOrderControls.length == 0)) {
                         var qafTagNames = [];
                         var qaf_tags = document.body.outerHTML.match(/<(qaf_).+?>/gi);
                         if (qaf_tags) {
@@ -662,6 +662,11 @@
             }
 
             var pageFormInit = function () {
+                var mod = context[$w.pageScript];
+                if (mod && mod['pageFormInit']) {
+                    mod['pageFormInit']();
+                }
+
                 var qafControlList = [];
                 var qafControls = document.querySelectorAll('[qaf-datafield],[qaf-options],[qaf-events]');
                 for (var i = 0; i < qafControls.length; i++) {
@@ -820,7 +825,7 @@
                         if (qaf.$reflection.isString(options.transactConfig.triggerEvent) == true) {
                             $l.addEvent(elID, options.transactConfig.triggerEvent, function (transactConfig) {
                                 var el = this;
-                                if (transactConfig && (transactConfig.triggerEvent == null || transactConfig.triggerEvent == undefined)) {
+                                if (transactConfig && $object.isNullOrUndefined(transactConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     transactConfig = options.transactConfig;
                                 }
@@ -839,7 +844,7 @@
                         else if (qaf.$reflection.isArray(options.transactConfig.triggerEvent) == true) {
                             var triggerFunction = function (transactConfig) {
                                 var el = this;
-                                if (transactConfig && (transactConfig.triggerEvent == null || transactConfig.triggerEvent == undefined)) {
+                                if (transactConfig && $object.isNullOrUndefined(transactConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     transactConfig = options.transactConfig;
                                 }
@@ -866,7 +871,7 @@
                         if (qaf.$reflection.isString(options.triggerConfig.triggerEvent) == true) {
                             $l.addEvent(elID, options.triggerConfig.triggerEvent, function (triggerConfig) {
                                 var el = this;
-                                if (triggerConfig && (triggerConfig.triggerEvent == null || triggerConfig.triggerEvent == undefined)) {
+                                if (triggerConfig && $object.isNullOrUndefined(triggerConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     triggerConfig = options.triggerConfig;
                                 }
@@ -885,7 +890,7 @@
                         else if (qaf.$reflection.isArray(options.triggerConfig.triggerEvent) == true) {
                             var triggerFunction = function (triggerConfig) {
                                 var el = this;
-                                if (triggerConfig && (triggerConfig.triggerEvent == null || triggerConfig.triggerEvent == undefined)) {
+                                if (triggerConfig && $object.isNullOrUndefined(triggerConfig.triggerEvent) == true) {
                                     var options = eval('(' + el.getAttribute('qaf-options') + ')');
                                     triggerConfig = options.triggerConfig;
                                 }
@@ -919,7 +924,6 @@
                     document.body.style.display = 'block';
                 }
 
-                var mod = context[$w.pageScript];
                 if (mod) {
                     mod.qafControls = qafControlList;
                 }
@@ -946,7 +950,7 @@
             if ($w.mappingModule == true) {
                 $w.moduleReadyIntervalID = setInterval(function () {
                     var mod = context[$w.pageScript];
-                    if (mod) {
+                    if (mod && mod._pageInit == undefined) {
                         clearInterval($w.moduleReadyIntervalID);
                         $w.moduleReadyIntervalID = null;
 
@@ -954,6 +958,7 @@
                             domainLibraryLoad();
                         }
 
+                        mod._pageInit = true;
                         if ($w.appInfo && $w.appInfo.mappingModel) {
                             var argArgs = $r.getCookie('qaf.iscache') == 'true' ? '' : '?bust=' + new Date().getTime();
                             var moduleJsonFile = $w.pageScript.replace('$', '') + '.json';
@@ -1114,7 +1119,7 @@
                     isContinue = $this.beforeTrigger(triggerConfig.triggerID, triggerConfig.action, triggerConfig.params);
                 }
 
-                if (isContinue == null || isContinue == undefined || isContinue == true) {
+                if ($object.isNullOrUndefined(isContinue) == true || isContinue == true) {
                     var el = $l.get(triggerConfig.triggerID);
                     var triggerResult = null;
                     var trigger = null;
@@ -1172,13 +1177,17 @@
         },
 
         transactionAction: function (transactConfig) {
-            if ($this && $this.mappingModel) {
-                if ($w.progressMessage) {
+            if (transactConfig && $this && $this.mappingModel) {
+                if ($object.isNullOrUndefined(transactConfig.noProgress) == true) {
+                    transactConfig.noProgress = false;
+                }
+
+                if ($w.progressMessage && transactConfig.noProgress == false) {
                     $w.progressMessage($res.progress);
                 }
 
                 try {
-                    if ($this.mappingModel.Transactions == null || $this.mappingModel.Transactions == undefined) {
+                    if ($object.isNullOrUndefined($this.mappingModel.Transactions) == true) {
                         $this.mappingModel.Transactions = [];
                     }
 
@@ -1188,7 +1197,7 @@
                         isContinue = $this.beforeTransaction(transactConfig);
                     }
 
-                    if (isContinue == null || isContinue == undefined || isContinue == true) {
+                    if ($object.isNullOrUndefined(isContinue) == true || isContinue == true) {
                         var transactions = $this.mappingModel.Transactions;
                         for (var i = 0; i < transactions.length; i++) {
                             if (transactConfig.functionID == transactions[i].FunctionID) {
@@ -1200,6 +1209,7 @@
                         var qafControlList = $this.qafControls;
                         var transactionObject = {};
                         transactionObject.FunctionID = transactConfig.functionID;
+                        transactionObject.TransactionResult = $object.isNullOrUndefined(transactConfig.transactionResult) == true ? true : transactConfig.transactionResult === true;
                         transactionObject.Inputs = [];
                         transactionObject.Outputs = [];
 
@@ -1777,7 +1787,7 @@
                 debugger;
             });
             */
-            directObject.TransactionResult = (directObject.TransactionResult == null || directObject.TransactionResult == undefined) ? true : directObject.TransactionResult === true;
+            directObject.TransactionResult = $object.isNullOrUndefined(directObject.TransactionResult) == true ? true : directObject.TransactionResult === true;
             var transactionObject = $w.transactionObject(directObject.FunctionID, 'Json');
 
             transactionObject.ProgramID = directObject.ProgramID;
@@ -1785,7 +1795,7 @@
             transactionObject.SystemID = directObject.SystemID;
             transactionObject.TransactionID = directObject.TransactionID;
             transactionObject.DataTransactionInterface = directObject.DataTransactionInterface || 'Row|Form';
-            transactionObject.TransactionResult = (directObject.TransactionResult == null || directObject.TransactionResult == undefined) ? true : directObject.TransactionResult === true;
+            transactionObject.TransactionResult = $object.isNullOrUndefined(directObject.TransactionResult) == true ? true : directObject.TransactionResult === true;
 
             if (isNodejs == true) {
                 transactionObject.ScreenID = directObject.ScreenID || directObject.TransactionID;
@@ -2006,7 +2016,7 @@
                                                             controlValue = 0;
                                                         }
 
-                                                        if (controlValue == null || controlValue == undefined) {
+                                                        if ($object.isNullOrUndefined(controlValue) == true) {
                                                             controlValue = '';
                                                         }
                                                     }
@@ -2166,86 +2176,74 @@
                                         var outputData = RES_OUTPUT['RES_DAT'];
 
                                         if (outputMapping.ResponseType == 'Form') {
-                                            if (outputData.length) {
+                                            if ($object.isNullOrUndefined(outputData) == true || outputData.length) {
                                                 responseObject.OutputStat.push({
                                                     FieldID: responseFieldID,
                                                     Count: 0
                                                 });
-
-                                                errorText = '"{0}" Form Output Mapping 확인 필요'.format(responseFieldID);
-                                                responseObject.ErrorText.push(errorText);
-                                                $l.eventLog('$w.transaction', errorText, 'Error');
                                             }
                                             else {
-                                                if ($reflection.isObjectEmpty(outputData) == true) {
-                                                    responseObject.OutputStat.push({
-                                                        FieldID: responseFieldID,
-                                                        Count: 0
-                                                    });
-                                                }
-                                                else {
-                                                    responseObject.OutputStat.push({
-                                                        FieldID: responseFieldID,
-                                                        Count: 1
-                                                    });
+                                                responseObject.OutputStat.push({
+                                                    FieldID: responseFieldID,
+                                                    Count: 1
+                                                });
 
-                                                    for (var key in outputMapping.Items) {
-                                                        var meta = outputMapping.Items[key];
-                                                        var dataFieldID = key; // qaf-datafield
-                                                        var fieldID = meta.FieldID; // DbColumnID
+                                                for (var key in outputMapping.Items) {
+                                                    var meta = outputMapping.Items[key];
+                                                    var dataFieldID = key; // qaf-datafield
+                                                    var fieldID = meta.FieldID; // DbColumnID
 
-                                                        var controlValue = outputData[fieldID];
-                                                        if (controlValue != undefined && qafControls && qafControls.length > 0) {
-                                                            var bindingControlInfos = qafControls.filter(function (item) {
-                                                                return item.field == dataFieldID && item.formDataFieldID == outputMapping.DataFieldID;
-                                                            });
+                                                    var controlValue = outputData[fieldID];
+                                                    if (controlValue != undefined && qafControls && qafControls.length > 0) {
+                                                        var bindingControlInfos = qafControls.filter(function (item) {
+                                                            return item.field == dataFieldID && item.formDataFieldID == outputMapping.DataFieldID;
+                                                        });
 
-                                                            if (bindingControlInfos.length == 1) {
-                                                                var controlInfo = bindingControlInfos[0];
-                                                                var controlModule = null;
-                                                                var currings = controlInfo.module.split('.');
-                                                                if (currings.length > 0) {
-                                                                    for (var i = 0; i < currings.length; i++) {
-                                                                        var curring = currings[i];
-                                                                        if (controlModule) {
-                                                                            controlModule = controlModule[curring];
-                                                                        }
-                                                                        else {
-                                                                            controlModule = context[curring];
-                                                                        }
+                                                        if (bindingControlInfos.length == 1) {
+                                                            var controlInfo = bindingControlInfos[0];
+                                                            var controlModule = null;
+                                                            var currings = controlInfo.module.split('.');
+                                                            if (currings.length > 0) {
+                                                                for (var i = 0; i < currings.length; i++) {
+                                                                    var curring = currings[i];
+                                                                    if (controlModule) {
+                                                                        controlModule = controlModule[curring];
+                                                                    }
+                                                                    else {
+                                                                        controlModule = context[curring];
                                                                     }
                                                                 }
-                                                                else {
-                                                                    controlModule = context[controlInfo.module];
-                                                                }
-
-                                                                controlModule.setValue(controlInfo.id, controlValue, meta);
                                                             }
                                                             else {
-                                                                var isMapping = false;
-                                                                if ($this.$data && $this.$data.storeList.length > 0) {
-                                                                    for (var k = 0; k < $this.$data.storeList.length; k++) {
-                                                                        var store = $this.$data.storeList[k];
-                                                                        if (store.storeType == 'Form' && store.dataSourceID == outputMapping.DataFieldID) {
-                                                                            isMapping = true;
-                                                                            bindingControlInfos = store.columns.filter(function (item) {
-                                                                                return item.data == dataFieldID;
-                                                                            });
+                                                                controlModule = context[controlInfo.module];
+                                                            }
 
-                                                                            if (bindingControlInfos.length == 1) {
-                                                                                $this.store[store.dataSourceID][dataFieldID] = controlValue;
-                                                                            }
+                                                            controlModule.setValue(controlInfo.id, controlValue, meta);
+                                                        }
+                                                        else {
+                                                            var isMapping = false;
+                                                            if ($this.$data && $this.$data.storeList.length > 0) {
+                                                                for (var k = 0; k < $this.$data.storeList.length; k++) {
+                                                                    var store = $this.$data.storeList[k];
+                                                                    if (store.storeType == 'Form' && store.dataSourceID == outputMapping.DataFieldID) {
+                                                                        isMapping = true;
+                                                                        bindingControlInfos = store.columns.filter(function (item) {
+                                                                            return item.data == dataFieldID;
+                                                                        });
 
-                                                                            break;
+                                                                        if (bindingControlInfos.length == 1) {
+                                                                            $this.store[store.dataSourceID][dataFieldID] = controlValue;
                                                                         }
+
+                                                                        break;
                                                                     }
                                                                 }
+                                                            }
 
-                                                                if (isMapping == false) {
-                                                                    errorText = '"{0}" Form Output Mapping 확인 필요'.format(dataFieldID);
-                                                                    responseObject.ErrorText.push(errorText);
-                                                                    $l.eventLog('$w.transaction', errorText, 'Error');
-                                                                }
+                                                            if (isMapping == false) {
+                                                                errorText = '"{0}" Form Output Mapping 확인 필요'.format(dataFieldID);
+                                                                responseObject.ErrorText.push(errorText);
+                                                                $l.eventLog('$w.transaction', errorText, 'Error');
                                                             }
                                                         }
                                                     }

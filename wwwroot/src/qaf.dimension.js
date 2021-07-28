@@ -305,7 +305,7 @@
         },
 
         measureSize: function (text, fontSize) {
-            if (text == null || text == undefined) {
+            if ($object.isNullOrUndefined(text) == true) {
                 return null;
             }
 

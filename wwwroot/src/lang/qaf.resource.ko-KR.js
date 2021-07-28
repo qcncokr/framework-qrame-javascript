@@ -45,7 +45,7 @@
     $res.add('create', '입력');
     $res.add('read', '조회');
     $res.add('find', '검색');
-    $res.add('update', '수정');
+    $res.add('edit', '수정');
     $res.add('delele', '삭제');
     $res.add('removeStatusNo', '삭제 가능한 상태가 아닙니다. 데이터를 조회한 후 삭제 해야 합니다.');
     $res.add('removeConfirm', '정말로 삭제 하시겠습니까?');

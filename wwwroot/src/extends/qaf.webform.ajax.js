@@ -122,7 +122,7 @@
             var el = document.createElement('script');
 
             el.setAttribute('type', 'text/javascript');
-            el.setAttribute('src', url + '&noCache=' + (new Date()).getTime());
+            el.setAttribute('src', url + (url.indexOf('?') > -1 ? '&' : '?') + 'noCache=' + (new Date()).getTime());
             el.setAttribute('id', resourceID);
 
             head.insertBefore(el, head.firstChild);
@@ -153,7 +153,7 @@
 
             el.setAttribute('rel', 'stylesheet');
             el.setAttribute('type', 'text/css');
-            el.setAttribute('href', url + '&noCache=' + (new Date()).getTime());
+            el.setAttribute('href', url + (url.indexOf('?') > -1 ? '&' : '?') + 'noCache=' + (new Date()).getTime());
             el.setAttribute('id', resourceID);
 
             head.appendChild(el);
@@ -168,10 +168,8 @@
             /// </summary>
             /// <param name='url' type='String'>Html, Json등 URL</param>
             /// <returns type='Object' />
-            url = url;
-
             var xhr = $w.xmlHttp();
-            xhr.open('get', url + '&noCache=' + (new Date()).getTime(), true);
+            xhr.open('get', url + (url.indexOf('?') > -1 ? '&' : '?') + 'noCache=' + (new Date()).getTime(), true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status !== 200) {
@@ -185,7 +183,7 @@
                     }
 
                     if (callback) {
-                        callback(xhr.responseText)
+                        callback(xhr.responseText);
                     }
                 }
             }
@@ -542,6 +540,18 @@
             return result;
         },
 
+        executeDynamicTypeObject: new function () {
+            this.DataSet = '0';
+            this.Json = '1';
+            this.Scalar = '2';
+            this.NonQuery = '3';
+            this.SQLText = '4';
+            this.SchemeOnly = '5';
+            this.CodeHelp = '6';
+            this.Xml = '7';
+            this.DynamicJson = '8';
+        },
+
         executeTransaction: function (mappingModel, transactionObject, callback, async, token) {
             /// <summary>
             /// 비즈니스 로직이 포함되어 있는 WCF 요청을 수행합니다.
@@ -566,7 +576,7 @@
                 var apiServices = $w.getStorage('apiServices', false);
                 if (apiServices) {
                     apiService = apiServices[qaf.Config.Transaction.SystemID + qaf.Config.DomainServerType];
-                    if ((apiServices.BearerToken == null || apiServices.BearerToken == undefined) && globalThis.bearerToken) {
+                    if ($object.isNullOrUndefined(apiServices.BearerToken) == true && globalThis.bearerToken) {
                         apiServices.BearerToken = globalThis.bearerToken;
                         $w.setStorage('apiServices', apiServices, false);
                     }
@@ -887,6 +897,14 @@
                                         for (var i = 0; i < length; i++) {
                                             var item = RES_OUTPUT[i];
 
+                                            if (transactionResponse.TH.SMLT_TRN_DSCD == $w.executeDynamicTypeObject.CodeHelp) {
+                                                jsonObject.push({
+                                                    RES_FIELD_ID: item.RES_FIELD_ID,
+                                                    RES_DAT: item.RES_DAT
+                                                });
+                                                continue;
+                                            }
+
                                             if (transactionResponse.TH.DAT_FMT == 'J') {
                                                 if (transactionResponse.TH.CRYPTO_DSCD == 'C') {
                                                     jsonObject.push({
@@ -999,7 +1017,7 @@
                             }
                             else {
                                 if (callback) {
-                                    if (transactionResponse.Acknowledge == 1) {
+                                    if (transactionResponse && transactionResponse.Acknowledge && transactionResponse.Acknowledge == 1) {
                                         try {
                                             var mdo = transactionResponse.MDO;
                                             if (transactionResponse.DAT.RES_OUTPUT != null && transactionResponse.DAT.RES_OUTPUT.length > 0) {

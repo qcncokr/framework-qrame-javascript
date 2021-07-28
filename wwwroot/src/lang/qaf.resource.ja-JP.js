@@ -45,7 +45,7 @@
     $res.add('create', '入力');
     $res.add('read', '照会');
     $res.add('find', '検索');
-    $res.add('update', '修正');
+    $res.add('edit', '修正');
     $res.add('delele', '削除');
     $res.add('removeStatusNo', '削除可能な状態ではありません。 データを問い合わせた後削除しなければなりません。');
     $res.add('removeConfirm', '本当に削除しますか?');

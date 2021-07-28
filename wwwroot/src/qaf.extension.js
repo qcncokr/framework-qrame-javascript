@@ -737,7 +737,7 @@
 
         substring: function (val, len) {
             var currentLength = 0;
-            if (len == null || len == undefined) {
+            if ($object.isNullOrUndefined(len) == true) {
                 len = val.length;
             }
 
@@ -869,7 +869,7 @@
             /// <returns type='Number' />
             var result = 0;
             try {
-                result = parseFloat((val == null || val == undefined ? 0 : val) === 0 || val === '' ? '0' : val.toString().replace(/,/g, ''));
+                result = parseFloat(($object.isNullOrUndefined(val) == true ? 0 : val) === 0 || val === '' ? '0' : val.toString().replace(/,/g, ''));
             } catch (error) {
                 console.log(error);
             }
@@ -948,7 +948,7 @@
                         break;
                     case 'number':
                     case 'int':
-                        result = val == null || val == undefined ? null : $string.isNumber(val) == true ? $string.toNumber(val) : null;
+                        result = $object.isNullOrUndefined(val) == true ? null : $string.isNumber(val) == true ? $string.toNumber(val) : null;
                         break;
                     case 'date':
                         if ($validation.regexs.isoDate.test(val)) {
@@ -984,7 +984,7 @@
                 return result;
             }
 
-            if (localeID == null || localeID == undefined) {
+            if ($object.isNullOrUndefined(localeID) == true) {
                 var x = val.toString().split('.');
                 var x1 = x[0];
 
@@ -1123,7 +1123,7 @@
             /// <param name='arr' type='Array'>객체 Array Object 입니다.</param>
             /// <param name='prop' type='String'>정렬 기준으로 사용 하려고 하는 속성명입니다.</param>
             /// <param name='order' type='Boolean'>true이면 정순으로, false면 역순으로 정렬합니다. 기본값은 true입니다.</param>
-            if (order == null || order == undefined) {
+            if ($object.isNullOrUndefined(order) == true) {
                 order = true;
             }
 
@@ -1484,12 +1484,43 @@
             var result = Math.pow(10, precision);
 
             return Math.round((num * 100 / val) * result) / result;
+        },
+
+        random: function (start, end) {
+            /// <summary>
+            /// 지정한 범위내 랜덤 숫자를 생성합니다. 기본 10자리입니다.
+            /// </summary>
+            /// <param name='len' type='Number'></param>
+            /// <returns type='String' />
+            if ($string.isNullOrEmpty(start) == true) {
+                start = 0;
+            }
+
+            if ($string.isNullOrEmpty(end) == true) {
+                end = 10;
+            }
+
+            return Math.floor((Math.random() * (end - start + 1)) + start);
         }
     });
     context.$number = qaf.lib.$number = $number;
 
     $object.extend({
         version: '1.0',
+
+        isNullOrUndefined: function (val) {
+            /// <summary>
+            /// 값에서 지정된 값이 비어 있는지 검증합니다.
+            /// </summary>
+            /// <param name='val' type='String'>비어있는지 검증하기 위한 값입니다.</param>
+            /// <returns type='Boolean' />
+            if (val === undefined || val === null) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },
 
         toCSV: function (obj, opt) {
             /// <summary>
