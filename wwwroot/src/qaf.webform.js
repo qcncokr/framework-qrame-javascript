@@ -456,6 +456,23 @@
             }
 
             var pageLoad = function () {
+                if ($object.isNullOrUndefined($w.SSO) == true) {
+                    $w.SSO = $w.getSSOInfo() || {
+                        TokenID: '',
+                        UserID: '',
+                        UserName: '',
+                        BusinessTel: '',
+                        BusinessEMail: '',
+                        DepartmentID: '',
+                        DepartmentName: '',
+                        PositionID: '',
+                        PositionName: '',
+                        CompanyNo: '',
+                        CompanyName: '',
+                        Roles: []
+                    };
+                }
+
                 var mod = context[$w.pageScript];
                 if (mod && mod.pageLoad) {
                     mod.pageLoad();
@@ -959,7 +976,7 @@
                         }
 
                         mod._pageInit = true;
-                        if ($w.appInfo && $w.appInfo.mappingModel) {
+                        if ($w.AppInfo && $w.AppInfo.mappingModel) {
                             var argArgs = $r.getCookie('qaf.iscache') == 'true' ? '' : '?bust=' + new Date().getTime();
                             var moduleJsonFile = $w.pageScript.replace('$', '') + '.json';
                             if (context.moduleJsonFile) {
@@ -1804,8 +1821,16 @@
                 transactionObject.ScreenID = $w.pageScript.replace('$', '');
             }
 
-            transactionObject.Inputs.push(directObject.InputObjects);
-            transactionObject.InputsItemCount.push(1);
+            if (directObject.InputLists && directObject.InputLists.length > 0) {
+                for (var key in directObject.InputLists) {
+                    transactionObject.Inputs.push(directObject.InputLists[key]);
+                }
+                transactionObject.InputsItemCount.push(directObject.InputLists.length);
+            }
+            else {
+                transactionObject.Inputs.push(directObject.InputObjects);
+                transactionObject.InputsItemCount.push(1);
+            }
 
             $w.executeTransaction(directObject, transactionObject, function (responseData, addtionalData) {
                 if (callback) {
@@ -2175,6 +2200,10 @@
                                         var responseFieldID = RES_OUTPUT['RES_FIELD_ID'];
                                         var outputData = RES_OUTPUT['RES_DAT'];
 
+                                        if ($this.outputDataBinding) {
+                                            $this.outputDataBinding(functionID, responseFieldID, outputData);
+                                        }
+
                                         if (outputMapping.ResponseType == 'Form') {
                                             if ($object.isNullOrUndefined(outputData) == true || outputData.length) {
                                                 responseObject.OutputStat.push({
@@ -2225,6 +2254,10 @@
                                                             if ($this.$data && $this.$data.storeList.length > 0) {
                                                                 for (var k = 0; k < $this.$data.storeList.length; k++) {
                                                                     var store = $this.$data.storeList[k];
+                                                                    if ($object.isNullOrUndefined($this.store[store.dataSourceID]) == true) {
+                                                                        $this.store[store.dataSourceID] = {};
+                                                                    }
+
                                                                     if (store.storeType == 'Form' && store.dataSourceID == outputMapping.DataFieldID) {
                                                                         isMapping = true;
                                                                         bindingControlInfos = store.columns.filter(function (item) {
@@ -2288,6 +2321,10 @@
                                                         if ($this.$data && $this.$data.storeList.length > 0) {
                                                             for (var k = 0; k < $this.$data.storeList.length; k++) {
                                                                 var store = $this.$data.storeList[k];
+                                                                if ($object.isNullOrUndefined($this.store[store.dataSourceID]) == true) {
+                                                                    $this.store[store.dataSourceID] = [];
+                                                                }
+
                                                                 if (store.storeType == 'Grid' && store.dataSourceID == outputMapping.DataFieldID) {
                                                                     isMapping = true;
                                                                     var bindingInfos = $this.$data.bindingList.filter(function (item) {

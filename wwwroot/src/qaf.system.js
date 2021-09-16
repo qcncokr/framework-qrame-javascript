@@ -37,6 +37,9 @@
                                                 provider: dataSource.DataProvider
                                             });
                                         }
+                                        else {
+                                            callback('DataSourceID: {0}, ApplicationID: {1}, ProjectID: {2} 환경 설정 확인 필요'.format(dataSourceID, moduleConfig.ApplicationID, moduleConfig.ProjectID), null);
+                                        }
                                     }
                                     else {
                                         var findDataSource = dataSource.find(function (item) { return item.DataSourceID == dataSourceID && item.ApplicationID === moduleConfig.ApplicationID && item.ProjectID.split(',').indexOf(moduleConfig.ProjectID) > -1; });
@@ -45,6 +48,9 @@
                                                 connectionString: findDataSource.ConnectionString,
                                                 provider: findDataSource.DataProvider
                                             });
+                                        }
+                                        else {
+                                            callback('DataSourceID: {0}, ApplicationID: {1}, ProjectID: {2} 환경 설정 확인 필요'.format(dataSourceID, moduleConfig.ApplicationID, moduleConfig.ProjectID), null);
                                         }
                                     }
                                 }
@@ -78,16 +84,14 @@
                         result = mybatisMapper.getStatement('feature', statementID, parameters);
                     }
                     else {
-                        $l.eventLog('getStatement', 'featureSQLPath - {0} 확인 필요'.format(featureSQLPath), 'Fatal');
-                        throw new Error('featureSQLPath 확인 필요');
+                        $l.eventLog('getStatement', 'featureSQLPath - {0} 확인 필요'.format(featureSQLPath), 'Error');
                     }
                 } catch (error) {
-                    $l.eventLog('getStatement', error, 'Fatal');
-                    throw error;
+                    $l.eventLog('getStatement', error, 'Error');
                 }
             }
             else {
-                throw new Error('ModuleID 확인 필요');
+                $l.eventLog('getStatement', 'ModuleID 확인 필요', 'Error');
             }
 
             return result;
@@ -104,40 +108,260 @@
                         }
                     }
                     else {
-                        // dataSource.provider에 따른 mssql, oracle, mysql 분기 처리 필요
-                        var db = require('mssql');
-                        db.connect(dataSource.connectionString, function (error) {
-                            if (error) {
-                                if (callback) {
-                                    callback(error, null);
-                                }
-                            }
-                            else {
-                                var sql = '';
-
-                                try {
-                                    sql = $s.getStatement(moduleID, statementID, parameters);
-                                    sql = sql.replace(/\\\"/g, '"');
-                                } catch (error) {
-                                    callback(error, null);
-                                    return;
-                                }
-
-                                if (callback) {
-                                    db.query(sql, function (error, result) {
-                                        if (error) {
-                                            callback(error, null);
-                                        }
-                                        else {
-                                            callback(null, result);
-                                        }
-                                    });
+                        if (dataSource.provider == 'SqlServer') {
+                            var db = require('mssql');
+                            db.connect(dataSource.connectionString, function (error) {
+                                if (error) {
+                                    if (callback) {
+                                        callback(error, null);
+                                    }
                                 }
                                 else {
-                                    db.query(sql);
+                                    var sql = '';
+
+                                    try {
+                                        sql = $s.getStatement(moduleID, statementID, parameters);
+                                        if (sql == null) {
+                                            var message = 'moduleID: {0}, statementID: {1} - 쿼리 매핑 확인 필요'.format(moduleID, statementID);
+                                            $l.eventLog('getStatement', message, 'Error');
+                                            if (callback) {
+                                                callback(message, null);
+                                            }
+                                        }
+
+                                        sql = sql.replace(/\\\"/g, '"');
+
+                                        if ($string.isNullOrEmpty(sql.trim()) == true) {
+                                            var message = 'moduleID: {0}, statementID: {1} - SQL 내용 없음'.format(moduleID, statementID, error.message);
+                                            $l.eventLog('getStatement', message, 'Error');
+                                            if (callback) {
+                                                callback(message, null);
+                                            }
+                                        }
+                                    } catch (error) {
+                                        db.close();
+                                        var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                        $l.eventLog('getStatement', message, 'Error');
+                                        if (callback) {
+                                            callback(message, null);
+                                        }
+                                    }
+
+                                    if (callback) {
+                                        db.query(sql, function (error, result) {
+                                            db.close();
+                                            if (error) {
+                                                var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                                $l.eventLog('getStatement', message, 'Error');
+                                                if (callback) {
+                                                    callback(message, null);
+                                                }
+                                            }
+                                            else {
+                                                callback(null, result);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        db.query(sql, function (error, result) {
+                                            db.close();
+
+                                            if (error) {
+                                                var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                                $l.eventLog('getStatement', message, 'Error');
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else if (dataSource.provider == 'MySQL') {
+                            var mysql = require('mysql');
+                            var mysqlConnectionInfos = dataSource.connectionString.split(';');
+
+                            // https://www.npmjs.com/package/mysql
+                            // 'mysql://user:pass@host/db?&charset=UTF8_GENERAL_CI&timezone=local&connectTimeout=10000&multipleStatements=true'
+                            var mysqlConnectionObject = {
+                                host: 'localhost',
+                                user: '',
+                                password: '',
+                                database: '',
+                                multipleStatements: true
+                            };
+
+                            var length = mysqlConnectionInfos.length;
+                            for (var i = 0; i < length; i++) {
+                                var item = mysqlConnectionInfos[i];
+                                if (item.indexOf('Server=') > -1) {
+                                    mysqlConnectionObject.host = item.substring(7);
+                                    continue;
+                                }
+
+                                if (item.indexOf('Uid=') > -1) {
+                                    mysqlConnectionObject.user = item.substring(4);
+                                    continue;
+                                }
+
+                                if (item.indexOf('Pwd=') > -1) {
+                                    mysqlConnectionObject.password = item.substring(4);
+                                    continue;
+                                }
+
+                                if (item.indexOf('Database=') > -1) {
+                                    mysqlConnectionObject.database = item.substring(9);
+                                    continue;
+                                }
+
+                                if (item.indexOf('Timeout=') > -1) {
+                                    mysqlConnectionObject.connectTimeout = item.substring(8);
+                                    continue;
                                 }
                             }
-                        });
+
+                            var db = mysql.createConnection(mysqlConnectionObject);
+                            db.connect(function (error) {
+                                if (error) {
+                                    if (callback) {
+                                        callback(error, null);
+                                    }
+                                }
+                                else {
+                                    var sql = '';
+
+                                    try {
+                                        sql = $s.getStatement(moduleID, statementID, parameters);
+                                        sql = sql.replace(/\\\"/g, '"');
+
+                                        if ($string.isNullOrEmpty(sql.trim()) == true) {
+                                            var message = 'moduleID: {0}, statementID: {1} - SQL 내용 없음'.format(moduleID, statementID, error.message);
+                                            $l.eventLog('getStatement', message, 'Error');
+                                            if (callback) {
+                                                callback(message, null);
+                                            }
+                                        }
+                                    } catch (error) {
+                                        db.end();
+                                        var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                        $l.eventLog('getStatement', message, 'Error');
+                                        if (callback) {
+                                            callback(message, null);
+                                        }
+                                    }
+
+                                    if (callback) {
+                                        db.query(sql, function (error, result) {
+                                            db.end();
+                                            if (error) {
+                                                var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                                $l.eventLog('getStatement', message, 'Error');
+                                                if (callback) {
+                                                    callback(message, null);
+                                                }
+                                            }
+                                            else {
+                                                callback(null, result);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        db.query(sql, function (error, result) {
+                                            db.end();
+
+                                            if (error) {
+                                                var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                                $l.eventLog('getStatement', message, 'Error');
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else if (dataSource.provider == 'Oracle') {
+                            var oracledb = require('oracledb');
+                            var oracledbConnectionInfos = dataSource.connectionString.split(';');
+
+                            // https://oracle.github.io/node-oracledb/doc/api.html#connectionstrings
+                            // https://oracle.github.io/node-oracledb/INSTALL.html
+                            var oracledbConnectionObject = {
+                                user: '',
+                                password: '',
+                                connectString: dataSource.connectionString
+                            };
+
+                            var length = oracledbConnectionInfos.length;
+                            for (var i = 0; i < length; i++) {
+                                var item = oracledbConnectionInfos[i];
+                                if (item.indexOf('User Id=') > -1) {
+                                    oracledbConnectionObject.user = item.substring(8);
+                                    continue;
+                                }
+
+                                if (item.indexOf('Password=') > -1) {
+                                    oracledbConnectionObject.password = item.substring(9);
+                                    continue;
+                                }
+                            }
+
+                            oracledb.getConnection(oracledbConnectionObject, function (error, db) {
+                                if (error) {
+                                    if (callback) {
+                                        callback(error, null);
+                                    }
+                                }
+                                else {
+                                    var sql = '';
+
+                                    try {
+                                        sql = $s.getStatement(moduleID, statementID, parameters);
+                                        sql = sql.replace(/\\\"/g, '"');
+
+                                        if ($string.isNullOrEmpty(sql.trim()) == true) {
+                                            var message = 'moduleID: {0}, statementID: {1} - SQL 내용 없음'.format(moduleID, statementID, error.message);
+                                            $l.eventLog('getStatement', message, 'Error');
+                                            if (callback) {
+                                                callback(message, null);
+                                            }
+                                        }
+                                    } catch (error) {
+                                        db.close();
+                                        var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                        $l.eventLog('getStatement', message, 'Error');
+                                        if (callback) {
+                                            callback(message, null);
+                                        }
+                                    }
+
+                                    if (callback) {
+                                        db.execute(sql, function (error, result) {
+                                            db.close();
+                                            if (error) {
+                                                var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                                $l.eventLog('getStatement', message, 'Error');
+                                                if (callback) {
+                                                    callback(message, null);
+                                                }
+                                            }
+                                            else {
+                                                callback(null, result);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        db.execute(sql, function (error, result) {
+                                            db.close();
+
+                                            if (error) {
+                                                var message = 'moduleID: {0}, statementID: {1} - {2}'.format(moduleID, statementID, error.message);
+                                                $l.eventLog('getStatement', message, 'Error');
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            callback('데이터 원본 "{0}" 확인 필요'.format(dataSource.provider), null);
+                        }
                     }
                 });
             }

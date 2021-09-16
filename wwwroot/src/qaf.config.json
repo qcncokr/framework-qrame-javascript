@@ -1,11 +1,11 @@
-﻿{
-    "ApplicationID": "EWP",
+{
+    "ApplicationID": "QCN",
     "ProjectID": "DWP",
     "SystemID": "BOP01",
     "TransactionTimeout": 60000,
     "IsConfiguration": false,
-    "SolutionName": "EWP Solution",
-    "ProgramName": "EWP.Web.Managed",
+    "SolutionName": "QCN Solution",
+    "ProgramName": "QCN.Web.Managed",
     "TextEditorExtension": "html|js|help|cs|sql",
     "UIEventLogLevel": "Verbose",
     "IsClientCaching": false,
@@ -40,7 +40,7 @@
     "Transaction": {
         "ProtocolVersion": "001",
         "RunningEnvironment": "D",
-        "DataFormat": "T",
+        "DataFormat": "J",
         "MachineName": "",
         "SystemCode": "DTS",
         "SystemID": "BOP01",
@@ -49,13 +49,13 @@
         "DataEncryptionYN": "N"
     },
     "LoginUser": {
-        "UserID": "junchul",
-        "UserName": "조준철",
+        "UserID": "qcndev",
+        "UserName": "큐씨엔",
         "UserClass": "0",
         "DepartmentID": "dev",
         "UserTypeID": [ "all" ],
         "PersonalTel": "",
         "BusinessTel": "",
-        "EMail": "junchul@qcn.co.kr"
+        "EMail": "qcndev@qcn.co.kr"
     }
 }

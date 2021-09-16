@@ -604,6 +604,70 @@
         isISOString: function (val) {
             var date = new Date(val);
             return !Number.isNaN(date.valueOf()) && date.toISOString() === val;
+        },
+
+        calcWeekOfMonth: function (year, month, weekStand) {
+            var result = [];
+            var date = new Date(year, month);
+
+            // 월요일을 중심으로한 주차 구하기(일요일 0 월요일 1 ~ 토요일 6 )
+            var firstDay = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+            var lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
+            var week = null;
+
+            if ($object.isNullOrUndefined(weekStand) == true) {
+                weekStand = 8; // 월요일 고정
+            }
+
+            var firstWeekEndDate = true;
+            var thisMonthFirstWeek = firstDay.getDay();
+
+            for (var num = 1; num <= 6; num++) {
+                // 마지막월과 첫번째월이 다른경우 빠져나온다.
+                if (lastDay.getMonth() != firstDay.getMonth()) {
+                    break;
+                }
+
+                week = {};
+
+                // 한주의 시작일은 월의 첫번째 월요일로 설정
+                if (firstDay.getDay() <= 1) {
+                    // 한주의 시작일이 일요일이라면 날짜값을 하루 더해준다.
+                    if (firstDay.getDay() == 0) {
+                        firstDay.setDate(firstDay.getDate() + 1);
+                    }
+
+                    week.weekStartDate = firstDay.getFullYear().toString() + '-' + $this.numberPad((firstDay.getMonth() + 1).toString(), 2) + '-' + $this.numberPad(firstDay.getDate().toString(), 2);
+                }
+
+                if (weekStand > thisMonthFirstWeek) {
+                    if (firstWeekEndDate) {
+                        if (weekStand - firstDay.getDay() == 1) {
+                            firstDay.setDate(firstDay.getDate() + (weekStand - firstDay.getDay()) - 1);
+                        }
+
+                        if (weekStand - firstDay.getDay() > 1) {
+                            firstDay.setDate(firstDay.getDate() + (weekStand - firstDay.getDay()) - 1);
+                        }
+
+                        firstWeekEndDate = false;
+                    } else {
+                        firstDay.setDate(firstDay.getDate() + 6);
+                    }
+                } else {
+                    firstDay.setDate(firstDay.getDate() + (6 - firstDay.getDay()) + weekStand);
+                }
+
+                // 월요일로 지정한 데이터가 존재하는 경우에만 마지막 일의 데이터를 담는다.
+                if (typeof week.weekStartDate !== 'undefined') {
+                    week.weekEndDate = firstDay.getFullYear().toString() + '-' + $this.numberPad((firstDay.getMonth() + 1).toString(), 2) + '-' + $this.numberPad(firstDay.getDate().toString(), 2);
+                    result.push(week);
+                }
+
+                firstDay.setDate(firstDay.getDate() + 1);
+            }
+
+            return result;
         }
     });
     context.$date = qaf.lib.$date = $date;
